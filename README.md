@@ -1,30 +1,41 @@
 # spotify_app
 
-Flutter Spotify Clone App
+Spotify Clone App
 
-This Flutter application aims to replicate the functionality of the popular music streaming service Spotify. It utilizes the GetX design pattern for state management and clean architecture for a structured codebase. API calls are made using Retrofit for seamless data retrieval.
+This Flutter application is a Spotify clone, aiming to replicate the functionality of the popular music streaming service Spotify. It utilizes the GetX design pattern for state management, clean architecture for a structured codebase, Retrofit for API calls, secure storage for token management, and dependency injection with GetX.
 
 Features
 
-
-
 Search: Find specific songs, albums, or artists easily.
-Playlists: Create, edit.
-
+Playlists: Create, edit playlists.
+OAuth: Spotify authentication integration.
+Secure Storage: Token and refresh token management.
+Create Playlist and Add Tracks: Users can create playlists and add songs or albums to them.
+Dependency Injection with GetX: Dependency injection is utilized via GetX for managing dependencies efficiently.
 Technologies Used
-
 
 GetX: State management and dependency injection library for Flutter.
 Retrofit: HTTP client for Dart, used for making API calls.
 Clean Architecture: Design pattern for separating concerns and maintaining a modular codebase.
-Build Runner: Dart package that provides a concrete way of generating files using Dart code.
+Secure Storage: For managing authentication tokens securely.
+Dependency Injection: Utilized via GetX for managing dependencies.
 Getting Started
 
 To run this app locally, follow these steps:
 
-1.Clone this repository to your local machine.
-2.Ensure you have Flutter installed. If not, follow the instructions on the Flutter website.
-3.Navigate to the project directory in your terminal.
-4.Run flutter pub get to install dependencies.
-5.Configure your Spotify API credentials in the appropriate files.
-6.Run the app using flutter run.
+Clone this repository to your local machine.
+Ensure you have Flutter installed. If not, follow the instructions on the Flutter website.
+Navigate to the project directory in your terminal.
+Run flutter pub get to install dependencies.
+Configure your Spotify API credentials in the appropriate files.
+Run the app using flutter run.
+Additional Features
+
+1. Create Playlist and Add Tracks
+Users can create playlists and add songs or albums to them.
+2. Secure Storage for Token Management
+Secure storage is implemented for managing authentication tokens and refresh tokens securely.
+3. Dependency Injection with GetX
+Dependency injection is utilized via GetX for managing dependencies efficiently.
+4. OAuth Integration with Spotify
+Integration with Spotify OAuth for secure authentication.
