@@ -1,7 +1,8 @@
-import 'package:spotify_app/base/domain/base_usecase.dart';
-import 'package:spotify_app/features/spotify/domain/entities/item_playlist_entities.dart';
-import 'package:spotify_app/features/spotify/domain/entities/search_album_entities.dart';
-import 'package:spotify_app/features/spotify/domain/repositories/playlist_repo.dart';
+import '/features/spotify/data/models/request_model/request_usecase.dart';
+
+import '/base/domain/base_usecase.dart';
+import '/features/spotify/domain/entities/search_album_entities.dart';
+import '/features/spotify/domain/repositories/playlist_repo.dart';
 
 class SearchUseCase
     extends UseCaseIO<RequestSearch, List<SearchAlbumEntities>> {
@@ -13,12 +14,4 @@ class SearchUseCase
     return await _playListRepo.searchAlbum(
         input.limit, input.offset, input.searchName);
   }
-}
-
-class RequestSearch {
-  final int limit;
-  final int offset;
-  final String searchName;
-  RequestSearch(
-      {required this.limit, required this.offset, required this.searchName});
 }

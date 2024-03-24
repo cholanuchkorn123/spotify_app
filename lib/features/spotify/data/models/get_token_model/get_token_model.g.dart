@@ -12,6 +12,7 @@ GetTokenModel _$GetTokenModelFromJson(Map<String, dynamic> json) =>
       json['token_type'] as String,
       json['expires_in'] as int,
     );
+
 Map<String, dynamic> _$GetTokenModelToJson(GetTokenModel instance) =>
     <String, dynamic>{
       'accessToken': instance.accessToken,

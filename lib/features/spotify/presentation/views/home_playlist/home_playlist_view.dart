@@ -5,7 +5,6 @@ import 'package:spotify_app/features/spotify/presentation/controllers/home_playl
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:easy_refresh/easy_refresh.dart' as refreshIndi;
-import 'package:spotify_app/features/spotify/presentation/widgets/list_detail.dart';
 
 class HomePlayListView extends BaseGetView<HomePlayListController> {
   const HomePlayListView({super.key});
@@ -25,6 +24,7 @@ class HomePlayListView extends BaseGetView<HomePlayListController> {
               color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16),
         ),
         centerTitle: false,
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
             icon: const Icon(
@@ -70,13 +70,13 @@ class HomePlayListView extends BaseGetView<HomePlayListController> {
                   ),
                   itemCount: controller.itemPLayList.value.length,
                   itemBuilder: (context, index) {
-                    final item = controller.itemPLayList.value[index];
+                    final item = controller.itemPLayList[index];
                     return InkWell(
                       onTap: () {
-                        // Get.to(ListDetail(type: ListType.playlist));
+                        controller.getSinglePlayList(item.id);
                       },
-                      child: cardItem(
-                          item.imagesList[0].url, item.name, item.description),
+                      child: cardItem(item.imagesList?[0].url ?? "", item.name,
+                          item.description),
                     );
                   },
                 );

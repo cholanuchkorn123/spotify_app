@@ -12,8 +12,10 @@ import 'package:spotify_app/utils/services/log_service.dart';
 class AppBinding extends Bindings {
   @override
   void dependencies() {
-    Get.put(LogServiceImpl());
+    Get.lazyPut(() => LogServiceImpl(), fenix: true);
     Get.put<HandleTokenRepo>(HandleToken());
+    Get.put<UserIdRepo>(Get.find<HandleTokenRepo>());
+
     Get.lazyPut(
       () => DioBuilder(
         type: DioType.withToken,
@@ -30,9 +32,10 @@ class AppBinding extends Bindings {
       tag: DioType.ignoredToken.toString(),
       fenix: true,
     );
-    Get.put(GetTokenApi(
+    Get.lazyPut(() => GetTokenApi(
         Get.find<DioBuilder>(tag: DioType.ignoredToken.toString())));
-    Get.put<GetTokenRepo>(GetTokenImpl(spotifyApi: Get.find()));
+    Get.lazyPut<GetTokenRepo>(() => GetTokenImpl(
+        spotifyApi: Get.find(), handleTokenRepo: Get.find<HandleTokenRepo>()));
     Get.put(
       InitService(handleTokenRepo: Get.find(), getTokenRepo: Get.find()),
     );

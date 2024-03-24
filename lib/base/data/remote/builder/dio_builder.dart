@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:spotify_app/base/data/remote/interceptor/token_interceptor.dart';
 
 enum DioType { withToken, ignoredToken }
@@ -25,17 +24,17 @@ class DioBuilder extends DioMixin implements Dio {
 
     this.options = options;
 
-    final _logger = PrettyDioLogger(
-        requestHeader: true,
-        requestBody: true,
-        responseBody: true,
-        responseHeader: true,
-        error: true,
-        compact: true,
-        maxWidth: 90);
-    interceptors.add(_logger);
+    // final logger = PrettyDioLogger(
+    //     requestHeader: true,
+    //     requestBody: true,
+    //     responseBody: true,
+    //     responseHeader: true,
+    //     error: true,
+    //     compact: true,
+    //     maxWidth: 90);
+    // interceptors.add(_logger);
     if (type == DioType.withToken) {
-      interceptors.add(TokenInterceptor());
+      interceptors.add(TokenInterceptor(Dio()));
     }
 
     httpClientAdapter = IOHttpClientAdapter();

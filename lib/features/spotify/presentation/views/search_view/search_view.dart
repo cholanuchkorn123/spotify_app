@@ -1,25 +1,13 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
 import 'package:loading_indicator/loading_indicator.dart';
-import 'package:spotify_app/base/presentation/base_get_view.dart';
-import 'package:spotify_app/features/spotify/presentation/controllers/search/search_controller.dart';
-import 'package:spotify_app/features/spotify/presentation/widgets/bottom_menu.dart';
-import 'package:spotify_app/features/spotify/presentation/widgets/list_detail.dart';
-
-class Song {
-  final String name;
-  final String singer;
-  final String imagePath;
-  final String albumType;
-  final String albumName;
-
-  Song(
-      {required this.name,
-      required this.singer,
-      required this.imagePath,
-      required this.albumType,
-      required this.albumName});
-}
+import '/base/data/enums/enums_type.dart';
+import '/base/presentation/base_get_view.dart';
+import '/features/spotify/presentation/controllers/search/search_controller.dart';
+import '/features/spotify/presentation/controllers/tabbar/tabbar_controller.dart';
+import '/features/spotify/presentation/widgets/bottom_menu.dart';
 
 class SearchView extends BaseGetView<SearchingController> {
   const SearchView({super.key});
@@ -45,9 +33,10 @@ class SearchView extends BaseGetView<SearchingController> {
                           controller.searchBar.value = value;
                           if (value.isNotEmpty) {
                             controller.showSuggestions.value = true;
-                            await Future.delayed(
-                                const Duration(milliseconds: 300));
-                            controller.callSearch();
+
+                            Timer(const Duration(milliseconds: 400), () async {
+                              await controller.callSearch();
+                            });
                           } else {
                             controller.showSuggestions.value = false;
                           }
@@ -120,17 +109,16 @@ class SearchView extends BaseGetView<SearchingController> {
           itemCount: controller.itemPLayList.value.length,
           itemBuilder: (context, index) {
             final item = controller.itemPLayList.value[index];
+            final controllerNew = Get.find<MainTabBarController>();
             return GestureDetector(
               onTap: () async {
+                controller.hideKeyboard();
                 final album = await controller.getAlbum(item.idAlbum);
-                Get.to(ListDetail(
-                  typeCard: CardAlbumType.album,
-                  album: album,
-                  searchAlbumEntities: item,
-                ));
+                controllerNew.openNewView(album, CardAlbumType.album);
               },
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12.0),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -190,7 +178,11 @@ class SearchView extends BaseGetView<SearchingController> {
                         color: Colors.white,
                         size: 20.0,
                       ),
-                      onPressed: () => BottomMenu.showItemMenu(context, item),
+                      onPressed: () async {
+                        final album = await controller.getAlbum(item.idAlbum);
+                        BottomMenu.showItemMenu(context, null,
+                            item.imagesList[0].url, album.listTrack);
+                      },
                     ),
                   ],
                 ),

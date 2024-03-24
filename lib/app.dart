@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       title: 'Spotify App',
       debugShowCheckedModeBanner: false,
-      initialRoute: AppRoute.mainTabBar,
+      // initialRoute: AppRoute.mainTabBar,
       initialBinding: AppBinding(),
       getPages: AppRoute.generatedGetPages,
       defaultTransition: Transition.fade,
@@ -25,6 +25,18 @@ class MyApp extends StatelessWidget {
       ),
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.dark,
+      home: const HomeRoot(),
+    );
+  }
+}
+
+class HomeRoot extends StatelessWidget {
+  const HomeRoot({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      backgroundColor: Colors.black,
     );
   }
 }

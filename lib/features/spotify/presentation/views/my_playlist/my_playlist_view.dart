@@ -1,12 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/widgets.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:loading_indicator/loading_indicator.dart';
-import 'package:spotify_app/base/presentation/base_get_view.dart';
-import 'package:spotify_app/features/spotify/presentation/controllers/my_playlist/my_playlist_controller.dart';
-import 'package:spotify_app/features/spotify/presentation/views/search_view/search_view.dart';
-import 'package:spotify_app/features/spotify/presentation/widgets/bottom_menu.dart';
+import 'package:loading_indicator/loading_indicator.dart' as indicator;
+import '/base/presentation/base_get_view.dart';
+import '/features/spotify/presentation/controllers/my_playlist/my_playlist_controller.dart';
+import '/features/spotify/presentation/widgets/bottom_menu.dart';
 
 class MyPlayListView extends BaseGetView<MyPlayListController> {
   const MyPlayListView({super.key});
@@ -15,30 +14,6 @@ class MyPlayListView extends BaseGetView<MyPlayListController> {
   Widget myBuild(BuildContext context) {
     final double itemHeight = (Get.size.width - 24.0) / 2;
     final double itemWidth = Get.size.width / 4;
-
-    final List<Song> items = [
-      Song(
-          name: 'Mocking Playlist',
-          singer: 'Singer 1',
-          albumType: 'EP',
-          albumName: 'Album1',
-          imagePath:
-              'https://www.cdcosmos.com/wp-content/uploads/2022/09/307837633_602151491528795_6427324857413294413_n.jpg'),
-      Song(
-          name: 'Mocking Playlist 2',
-          singer: 'Singer 2',
-          albumName: 'Album2',
-          albumType: 'Single',
-          imagePath:
-              'https://www.cdcosmos.com/wp-content/uploads/2022/09/307837633_602151491528795_6427324857413294413_n.jpg'),
-      Song(
-          name: 'Mocking Playlist 3',
-          singer: 'Singer 3',
-          albumName: 'Album3',
-          albumType: 'Album',
-          imagePath:
-              'https://www.cdcosmos.com/wp-content/uploads/2022/09/307837633_602151491528795_6427324857413294413_n.jpg'),
-    ];
 
     return Scaffold(
       appBar: AppBar(
@@ -70,6 +45,7 @@ class MyPlayListView extends BaseGetView<MyPlayListController> {
             ),
           ],
         ),
+        automaticallyImplyLeading: false,
         centerTitle: false,
         actions: [
           IconButton(
@@ -87,70 +63,101 @@ class MyPlayListView extends BaseGetView<MyPlayListController> {
               size: 24.0,
             ),
             onPressed: () {
-              BottomMenu.showAddPlaylistMenu(context);
+              BottomMenu.showAddPlaylistMenu(
+                context,
+              );
             },
           ),
         ],
       ),
       body: SafeArea(
-          child: SingleChildScrollView(
-        child: Column(
-          children: [
-            GridView.builder(
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 8.0,
-                mainAxisSpacing: 8.0,
-                childAspectRatio: (itemWidth / itemHeight),
-              ),
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                return cardItem(items[index].imagePath, items[index].name, 'P');
-              },
-            )
-          ],
+          child: EasyRefresh(
+        onRefresh: controller.onRefreshFunc,
+        child: SingleChildScrollView(
+          child: SizedBox(
+            height: Get.height,
+            child: Obx(() {
+              return GridView.builder(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 8.0,
+                  mainAxisSpacing: 8.0,
+                  childAspectRatio: (itemWidth / itemHeight),
+                ),
+                itemCount: controller.itemPLayList.value.length,
+                itemBuilder: (_, index) {
+                  final item = controller.itemPLayList[index];
+                  return InkWell(
+                    onTap: () => controller.getSinglePlayList(item.id),
+                    child: cardItemPlayList(item.imagesList?[0].url ?? "",
+                        item.name, item.description),
+                  );
+                },
+              );
+            }),
+          ),
         ),
       )),
     );
   }
 
-  Widget cardItem(String imgPath, String namePlaylist, String creatorName) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          flex: 2,
-          child: ClipRRect(
-            borderRadius: const BorderRadius.all(Radius.circular(5)),
-            child: CachedNetworkImage(
-              width: double.maxFinite,
-              height: double.maxFinite,
-              fit: BoxFit.cover,
-              imageUrl: imgPath,
-              progressIndicatorBuilder: (context, url, downloadProgress) =>
-                  const Center(
-                child: CircleAvatar(
-                  radius: 10,
-                  child: LoadingIndicator(
-                    indicatorType: Indicator.ballPulse,
-                    colors: [Colors.white],
-                    strokeWidth: 3,
-                  ),
-                ),
-              ),
-              errorWidget: (context, url, error) => const Icon(Icons.error),
+  Widget cardItemPlayList(
+      String imgPath, String namePlaylist, String nameArtist) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: ClipRRect(
+              borderRadius: const BorderRadius.all(Radius.circular(5)),
+              child: imgPath.isEmpty
+                  ? Container(
+                      width: double.infinity,
+                      color: Colors.grey.withOpacity(0.1),
+                      child: const Center(
+                        child: Icon(
+                          Icons.music_note_outlined,
+                          size: 55,
+                          color: Colors.white,
+                        ),
+                      ),
+                    )
+                  : CachedNetworkImage(
+                      imageUrl: imgPath,
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) => const Center(
+                        child: CircleAvatar(
+                          radius: 10,
+                          child: indicator.LoadingIndicator(
+                            indicatorType: indicator.Indicator.ballPulse,
+                            colors: [Colors.white],
+                            strokeWidth: 3,
+                          ),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        width: double.infinity,
+                        color: Colors.grey.withOpacity(0.1),
+                        child: const Center(
+                          child: Icon(
+                            Icons.music_note_outlined,
+                            size: 55,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      fit: BoxFit.contain,
+                    ),
             ),
           ),
-        ),
-        Expanded(
-          flex: 1,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   namePlaylist,
@@ -158,11 +165,9 @@ class MyPlayListView extends BaseGetView<MyPlayListController> {
                       color: Colors.white,
                       fontSize: 14,
                       fontWeight: FontWeight.w600),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
                 ),
                 Text(
-                  creatorName,
+                  nameArtist,
                   style: GoogleFonts.inter(
                       color: Colors.grey.withOpacity(0.8),
                       fontSize: 14,
@@ -172,9 +177,9 @@ class MyPlayListView extends BaseGetView<MyPlayListController> {
                 ),
               ],
             ),
-          ),
-        )
-      ],
+          )
+        ],
+      ),
     );
   }
 }

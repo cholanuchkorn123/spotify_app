@@ -13,7 +13,7 @@ class _GetTokenApi implements GetTokenApi {
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'https://accounts.spotify.com/api/token';
+    baseUrl ??= 'https://accounts.spotify.com';
   }
 
   final Dio _dio;
@@ -25,6 +25,7 @@ class _GetTokenApi implements GetTokenApi {
     String grantType,
     String clientId,
     String clientSecret,
+    String refreshToken,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -36,6 +37,7 @@ class _GetTokenApi implements GetTokenApi {
       'grant_type': grantType,
       'client_id': clientId,
       'client_secret': clientSecret,
+      'refresh_token': refreshToken,
     };
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<GetTokenModel>(Options(
@@ -46,7 +48,7 @@ class _GetTokenApi implements GetTokenApi {
     )
             .compose(
               _dio.options,
-              '',
+              '/api/token',
               queryParameters: queryParameters,
               data: _data,
             )

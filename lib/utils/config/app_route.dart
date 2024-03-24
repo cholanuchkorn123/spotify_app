@@ -7,7 +7,6 @@ import 'package:spotify_app/features/spotify/presentation/views/home_playlist/ho
 import 'package:spotify_app/features/spotify/presentation/views/my_playlist/my_playlist_view.dart';
 import 'package:spotify_app/features/spotify/presentation/views/search_view/search_view.dart';
 import 'package:spotify_app/features/spotify/presentation/views/tabbar/main_tabbar_view.dart';
-import 'package:spotify_app/features/spotify/presentation/widgets/list_detail.dart';
 
 class AppRoute {
   static String mainTabBar = '/tabbar';

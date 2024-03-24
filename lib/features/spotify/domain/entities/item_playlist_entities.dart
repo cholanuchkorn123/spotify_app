@@ -3,7 +3,7 @@ import 'package:spotify_app/features/spotify/data/models/playlist_model/playlist
 abstract class PlayListEntities {
   String description;
   String id;
-  List<ImageModel> imagesList;
+  List<ImageModel>? imagesList;
   String name;
 
   bool public;

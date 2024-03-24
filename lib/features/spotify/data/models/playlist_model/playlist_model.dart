@@ -32,8 +32,10 @@ class PlayListModel extends PlayListEntities {
   @JsonKey(name: "name")
   String name;
   @JsonKey(name: "images")
-  List<ImageModel> images;
-  @JsonKey(name: "public")
+  List<ImageModel>? images;
+  @JsonKey(
+    name: "public",
+  )
   bool public;
   @JsonKey(name: "type")
   String type;

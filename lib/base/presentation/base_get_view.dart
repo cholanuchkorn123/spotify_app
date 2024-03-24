@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/state_manager.dart';
+import 'package:spotify_app/app.dart';
+import 'package:spotify_app/base/presentation/common/loading_indicator.dart';
 import '/base/presentation/base_controller.dart';
 
 export 'package:flutter/material.dart';

@@ -1,14 +1,12 @@
-import 'dart:ffi';
+import '/features/spotify/data/models/request_model/request_usecase.dart';
 
-import 'package:get/get.dart';
-import 'package:spotify_app/base/data/remote/builder/dio_builder.dart';
-import 'package:spotify_app/base/presentation/base_controller.dart';
-import 'package:spotify_app/base/presentation/base_get_view.dart';
-import 'package:spotify_app/features/spotify/domain/entities/album_entities.dart';
-
-import 'package:spotify_app/features/spotify/domain/entities/search_album_entities.dart';
-import 'package:spotify_app/features/spotify/domain/usecases/get_album_usecase.dart';
-import 'package:spotify_app/features/spotify/domain/usecases/search_usecase.dart';
+import '/base/data/enums/enums_type.dart';
+import '/base/presentation/base_controller.dart';
+import '/base/presentation/base_get_view.dart';
+import '/features/spotify/domain/entities/album_entities.dart';
+import '/features/spotify/domain/entities/search_album_entities.dart';
+import '/features/spotify/domain/usecases/get_album_usecase.dart';
+import '/features/spotify/domain/usecases/search_usecase.dart';
 
 class SearchingController extends BaseController {
   RxString searchBar = ''.obs;
@@ -17,22 +15,22 @@ class SearchingController extends BaseController {
   RxList<SearchAlbumEntities> itemPLayList = <SearchAlbumEntities>[].obs;
 
   final SearchUseCase searchUseCase;
-  final GetAlbumUseCase getAlbumUseCase;
-  SearchingController(this.getAlbumUseCase, {required this.searchUseCase});
-  @override
-  void onInit() async {
-    super.onInit();
-  }
+  final GetInfoUseCase getInfoUseCase;
+  SearchingController(this.getInfoUseCase, {required this.searchUseCase});
 
   callSearch() async {
     if (searchBar.value.isEmpty) {
       return;
     }
-    itemPLayList.value = await searchUseCase.build(
-        RequestSearch(limit: 10, offset: 0, searchName: searchBar.value));
+
+    await loadingScope(() async {
+      itemPLayList.value = await searchUseCase.build(
+          RequestSearch(limit: 10, offset: 0, searchName: searchBar.value));
+    });
   }
 
-  getAlbum(String idAlbum) async {
-    return await getAlbumUseCase.build(idAlbum);
+  Future<InfoEntities> getAlbum(String idAlbum) async {
+    return await getInfoUseCase.build(ReqType<String, CardAlbumType>(
+        input1: idAlbum, input2: CardAlbumType.album));
   }
 }

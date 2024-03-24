@@ -33,8 +33,8 @@ PlayListModel _$PlayListModelFromJson(Map<String, dynamic> json) =>
     PlayListModel(
       description: json['description'] as String,
       id: json['id'] as String,
-      images: (json['images'] as List<dynamic>)
-          .map((e) => ImageModel.fromJson(e as Map<String, dynamic>))
+      images: (json['images'] as List<dynamic>?)
+          ?.map((e) => ImageModel.fromJson(e as Map<String, dynamic>))
           .toList(),
       public: json['public'] as bool,
       type: json['type'] as String,
@@ -44,11 +44,11 @@ PlayListModel _$PlayListModelFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$PlayListModelToJson(PlayListModel instance) =>
     <String, dynamic>{
-      'imagesList': instance.imagesList.map((e) => e.toJson()).toList(),
+      'imagesList': instance.imagesList?.map((e) => e.toJson()).toList(),
       'description': instance.description,
       'id': instance.id,
       'name': instance.name,
-      'images': instance.images.map((e) => e.toJson()).toList(),
+      'images': instance.images?.map((e) => e.toJson()).toList(),
       'public': instance.public,
       'type': instance.type,
       'uri': instance.uri,

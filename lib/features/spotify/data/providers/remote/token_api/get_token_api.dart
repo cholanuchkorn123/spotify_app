@@ -10,7 +10,7 @@ part 'get_token_api.g.dart';
 @RestApi(baseUrl: AppConfig.baseUrlToken, parser: Parser.JsonSerializable)
 abstract class GetTokenApi {
   factory GetTokenApi(DioBuilder dioBuilder) = _GetTokenApi;
-  @POST('')
+  @POST('/api/token')
   @FormUrlEncoded()
   @Headers(
       <String, dynamic>{'Content-Type': 'application/x-www-form-urlencoded'})
@@ -18,5 +18,6 @@ abstract class GetTokenApi {
     @Field("grant_type") String grantType,
     @Field("client_id") String clientId,
     @Field("client_secret") String clientSecret,
+    @Field("refresh_token") String refreshToken,
   );
 }

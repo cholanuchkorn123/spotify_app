@@ -1,13 +1,22 @@
-import 'package:spotify_app/base/domain/base_usecase.dart';
-import 'package:spotify_app/features/spotify/domain/entities/album_entities.dart';
-import 'package:spotify_app/features/spotify/domain/repositories/playlist_repo.dart';
+import '/base/data/enums/enums_type.dart';
+import '/base/domain/base_usecase.dart';
+import '/features/spotify/domain/entities/album_entities.dart';
+import '/features/spotify/domain/repositories/playlist_repo.dart';
 
-class GetAlbumUseCase extends UseCaseIO<String, AlbumEntities> {
+class GetInfoUseCase
+    extends UseCaseIO<ReqType<String, CardAlbumType>, InfoEntities> {
   final PlayListRepo _playListRepo;
-  GetAlbumUseCase(this._playListRepo);
+  GetInfoUseCase(this._playListRepo);
 
   @override
-  Future<AlbumEntities> build(String input) async {
-    return await _playListRepo.getAlbum(input);
+  Future<InfoEntities> build(ReqType input) async {
+    return await _playListRepo.getInfo(input.input1, input.input2);
   }
+}
+
+class ReqType<T, K> {
+  final T input1;
+  final K input2;
+
+  ReqType({required this.input1, required this.input2});
 }

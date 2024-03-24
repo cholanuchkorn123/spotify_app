@@ -11,6 +11,10 @@ class Navigate {
     Get.toNamed(AppRoute.searching);
   }
 
+  static void gotoTabHome() {
+    Get.toNamed(AppRoute.mainTabBar);
+  }
+
   static void gotoMyPlaylist() {
     Get.toNamed(AppRoute.myplayList);
   }

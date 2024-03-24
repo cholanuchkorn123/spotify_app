@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:spotify_app/app.dart';
 import 'package:spotify_app/base/data/model/app_failure.dart';
 import 'package:spotify_app/base/domain/base_observer.dart';
 
 import '../../utils/services/log_service.dart';
+import '../presentation/common/loading_indicator.dart';
 
 abstract class UseCaseIO<Input, T> extends _UseCase<Input, T> {
   Future<T> build(Input input);
@@ -16,9 +18,12 @@ abstract class UseCaseIO<Input, T> extends _UseCase<Input, T> {
   @override
   Future<Stream<T>> _buildUseCaseStream(Input? input) async {
     final controller = StreamController<T>();
+
     try {
       final value = await build(input as Input);
+
       controller.add(value);
+
       controller.close();
     } catch (e) {
       controller.addError(e);

@@ -5,29 +5,24 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_indicator/loading_indicator.dart';
+import 'package:spotify_app/base/data/enums/enums_type.dart';
 import 'package:spotify_app/base/presentation/base_get_view.dart';
 import 'package:spotify_app/features/spotify/domain/entities/album_entities.dart';
 import 'package:spotify_app/features/spotify/domain/entities/search_album_entities.dart';
 import 'package:spotify_app/features/spotify/presentation/controllers/tabbar/tabbar_controller.dart';
-import 'package:spotify_app/features/spotify/presentation/views/search_view/search_view.dart';
 import 'package:spotify_app/features/spotify/presentation/widgets/bottom_menu.dart';
 import 'package:spotify_app/utils/config/app_navi.dart';
 
-enum CardAlbumType {
-  playlist,
-  album,
-}
-
 class ListDetail extends StatelessWidget {
-  final AlbumEntities album;
+  final InfoEntities? album;
   final CardAlbumType typeCard;
   final SearchAlbumEntities? searchAlbumEntities;
-  const ListDetail(
+  ListDetail(
       {super.key,
-      required this.album,
+      this.album,
       required this.typeCard,
       this.searchAlbumEntities});
-
+  final controllerTabBar = Get.find<MainTabBarController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,14 +33,14 @@ class ListDetail extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              album.nameAlbum,
+              album!.nameAlbum,
               style: GoogleFonts.inter(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
                   fontSize: 16),
             ),
             Text(
-              album.listTrack[0].singerName,
+              album!.listTrack.isNotEmpty ? album!.listTrack[0].singerName : "",
               style: GoogleFonts.inter(
                   color: Colors.grey,
                   fontWeight: FontWeight.w600,
@@ -54,6 +49,14 @@ class ListDetail extends StatelessWidget {
           ],
         ),
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+            size: 24.0,
+          ),
+          onPressed: controllerTabBar.onBack,
+        ),
         actions: const [
           IconButton(
             icon: Icon(
@@ -74,29 +77,42 @@ class ListDetail extends StatelessWidget {
               child: SizedBox(
                 width: Get.size.height * 0.25,
                 height: Get.size.height * 0.25,
-                child: CachedNetworkImage(
-                  imageUrl: album.imagesList[0].url,
-                  progressIndicatorBuilder: (context, url, downloadProgress) =>
-                      const Center(
-                    child: CircleAvatar(
-                      radius: 10,
-                      child: LoadingIndicator(
-                        indicatorType: Indicator.ballPulse,
-                        colors: [Colors.white],
-                        strokeWidth: 3,
+                child: album!.coverImageList?[0].url == null
+                    ? Container(
+                        width: double.infinity,
+                        color: Colors.grey.withOpacity(0.1),
+                        child: const Center(
+                          child: Icon(
+                            Icons.music_note_outlined,
+                            size: 55,
+                            color: Colors.white,
+                          ),
+                        ),
+                      )
+                    : CachedNetworkImage(
+                        imageUrl: album!.coverImageList?[0].url ?? "",
+                        progressIndicatorBuilder:
+                            (context, url, downloadProgress) => const Center(
+                          child: CircleAvatar(
+                            radius: 10,
+                            child: LoadingIndicator(
+                              indicatorType: Indicator.ballPulse,
+                              colors: [Colors.white],
+                              strokeWidth: 3,
+                            ),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
+                        fit: BoxFit.cover,
                       ),
-                    ),
-                  ),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                  fit: BoxFit.cover,
-                ),
               ),
             ),
             const SizedBox(
               height: 24.0,
             ),
             Text(
-              album.nameAlbum,
+              album?.nameAlbum ?? "",
               style: const TextStyle(
                   color: Colors.white,
                   fontSize: 24.0,
@@ -147,7 +163,7 @@ class ListDetail extends StatelessWidget {
                 ),
               ],
             ),
-            _songList()
+            album!.listTrack.isNotEmpty ? _songList() : const SizedBox()
           ],
         ),
       )),
@@ -155,26 +171,37 @@ class ListDetail extends StatelessWidget {
   }
 
   Widget _songList() {
-    final controllerTabBar = Get.find<MainTabBarController>();
-
     return SizedBox(
       height: 400,
       child: ListView.builder(
-        itemCount: album.listTrack.length,
+        itemCount: album?.listTrack.length,
         shrinkWrap: true,
         itemBuilder: (context, index) {
-          final item = album.listTrack[index];
+          final item = album?.listTrack[index];
+
+          final imageUrl = album?.listTrack[index].infoImage?.isEmpty ?? true
+              ? (album?.coverImageList?[0].url) ?? ""
+              : album?.listTrack[index].infoImage?[0].url ?? "";
+          final trackName = item?.trackName ?? "";
+          final singerName = item?.singerName ?? "";
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12.0),
+            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12),
             child: InkWell(
               onTapUp: (_) {
+                controllerTabBar.setUpsong(
+                    item?.trackName ?? "",
+                    album!.listTrack[index].infoImage == null
+                        ? album!.coverImageList![0].url
+                        : album!.listTrack[index].infoImage![0].url,
+                    item?.singerName ?? "");
                 controllerTabBar.isSelectedItem.value = true;
               },
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  typeCard == CardAlbumType.playlist
+                  typeCard == CardAlbumType.playlist &&
+                          (album?.listTrack[index].infoImage?[0].url != null)
                       ? Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(2.0),
@@ -183,7 +210,7 @@ class ListDetail extends StatelessWidget {
                             width: 50,
                             height: 50,
                             child: CachedNetworkImage(
-                              imageUrl: album.imagesList[0].url,
+                              imageUrl: imageUrl,
                               progressIndicatorBuilder:
                                   (context, url, downloadProgress) =>
                                       const Center(
@@ -217,9 +244,9 @@ class ListDetail extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.75,
+                        width: MediaQuery.of(context).size.width * 0.65,
                         child: Text(
-                          item.trackName,
+                          trackName,
                           style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16.0,
@@ -229,7 +256,7 @@ class ListDetail extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        item.singerName,
+                        singerName,
                         style: const TextStyle(
                             color: Colors.grey,
                             fontSize: 14.0,
@@ -246,8 +273,11 @@ class ListDetail extends StatelessWidget {
                       size: 20.0,
                     ),
                     // onPressed: () {},
-                    onPressed: () =>
-                        BottomMenu.showItemMenu(context, searchAlbumEntities!),
+                    onPressed: () {
+                      searchAlbumEntities ??
+                          BottomMenu.showItemMenu(context, item,
+                              album!.coverImageList?[0].url ?? "", []);
+                    },
                   ),
                 ],
               ),
